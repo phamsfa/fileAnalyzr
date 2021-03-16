@@ -56,7 +56,7 @@ class FsObject {
     {
         if($attribs->name === $params->getMethod() && $params->getDeletFlag() === false) {
 
-            $params->setDeleteFlag($attribs->getWithPath());
+            $params->setDeleteFlagAndPath($attribs->getWithPath());
             if($params->verbose) {
 
                 echo "\n start Deleting Content on $attribs->path/$attribs->name";
@@ -67,22 +67,31 @@ class FsObject {
     /* delete folders contained in deletion target and when empty: target itself */
     function deleteFolderOnTrigger(Attribs $attribs, Params $params, dbSocket $dbSocket)
     {
-        if($attribs->name !== $params->getMethod() && $params->getDeletFlag() === true) {
+        $msg = "\ndelFOT: $attribs->name";
+        $del = false;
+        if($attribs->getWithPath() !== $params->getDeletePath() && $params->getDeletFlag() === true) {
 
             $msg = "\n just delete folder $attribs->path/$attribs->name because of trigger";
+            $del = true;
 
-        } else if ($attribs->name === $params->getMethod() && $attribs->getWithPath() === $params->getDeletePath()) {
+        } else if ($attribs->getWithPath() === $params->getDeletePath()) {
 
             $msg = "\n delete folder $attribs->path/$attribs->name because of search-term and now is empty ";
             /* item we have searched for is now empty for deletion */
-            $params->unsetDeletFlag();
+            $params->unsetDeletMode();
+            $params->deletionRoundInc();
+            $del = true;
+
         }
 
-        if($params->verbose) {
-            echo $msg;
-        } else {
-            rmdir($attribs->getWithPath());
-            $this->delete($attribs,$dbSocket);
+        if($del) {
+            $params->deleteCounterInc();
+
+            if($params->verbose) {
+                echo $msg;
+            } else {
+                rmdir($attribs->getWithPath());
+            }
         }
     }
 
@@ -99,7 +108,7 @@ class FsObject {
 
                 unlink($attribs->getWithPath());
                 $params->deleteCounterInc();
-                $this->delete($attribs,$dbSocket);
+                //$this->delete($attribs,$dbSocket);
             }
             if(!$params->getDeletFlag()) {
                 /* when not flagged by folder - do increase on rounds */

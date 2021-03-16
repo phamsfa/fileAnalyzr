@@ -30,6 +30,8 @@ class Params
     private $deleteFlag = false;
     /* path of file found to be deleted */
     private $deletePath;
+    /* job success */
+    private $done;
 
     public function __construct ($argv)
     {
@@ -54,6 +56,11 @@ class Params
         return $this->option;
     }
 
+    /* get done */
+    public function getDone() {
+        return $this->done;
+    }
+
     /* increase counter for files/folders deleted */
     public function deleteCounterInc() {
         $this->deleteCounter++;
@@ -62,32 +69,41 @@ class Params
     /* increase number of finings by search string */
     public function deletionRoundInc() {
         $this->deletionRound++;
+        if($this->deletionRound == $this->method && $this->method != 0) {
+            $this->done = true;
+        }
+    }
+
+    /* get num of done deletions */
+    public function getDeletionRound() {
+        return $this->deletionRound;
     }
 
     /* activate deletion modus to clean folder befor removing dir */
-    public function setDeleteFlag($path) {
+    public function setDeleteFlagAndPath($path) {
         if($this->option == 0 || $this->option > $this->deletionRound) {
 
             $this->deleteFlag = true;
             $this->deletePath = $path;
-            $this->deletionRound++;
+            //$this->deletionRound++;
         }
-    }
-
-    /* stop deletion mode after clearing target folder */
-    public function unsetDeletFlag() {
-        $this->deleteFlag = false;
-        unset($this->deletePath);
-    }
-
-    /* is deletion mode on? */
-    public function getDeletFlag() {
-        return $this->deleteFlag;
     }
 
     /* which item has triggered deletion mode on? */
     public function getDeletePath() {
         return $this->deletePath;
+    }
+
+    /* stop deletion mode after clearing target folder */
+    public function unsetDeletMode() {
+        $this->deleteFlag = false;
+        $this->deletePath = NULL;
+        $this->done = true;
+    }
+
+    /* is deletion mode on? */
+    public function getDeletFlag() {
+        return $this->deleteFlag;
     }
 
     /* get cli arguments and transform boolean values */
@@ -106,5 +122,9 @@ class Params
 
             return $args[$num];
         }
+    }
+
+    public function get() {
+        return get_object_vars($this);
     }
 }
