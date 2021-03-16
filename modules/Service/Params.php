@@ -6,7 +6,7 @@
  * Time: 2:35 PM
  */
 
-namespace vznrw\service;
+namespace hmsf\Service;
 
 
 class Params
@@ -17,8 +17,37 @@ class Params
 
     public function __construct ($argv)
     {
-        $this->action = (isset($argv[1])) ? $argv[1] : NULL;
-        $this->method = (isset($argv[2])) ? $argv[2] : NULL;
-        $this->option = (isset($argv[3])) ? $argv[3] : NULL;
+        $this->action = $this->check($argv,1);
+        $this->method = $this->check($argv,2);
+        $this->option = $this->check($argv,3);
+    }
+    
+    public function getAction() {
+        return $this->action;
+    }
+    
+    public function getMethod() {
+        return $this->method;
+    }
+    
+    public function getOption() {
+        return $this->option;
+    }
+
+    private function check($args,$num)
+    {
+        if(!isset($args[$num])) {
+            return NULL;
+        }
+        if($args[$num] === 'true' || $args[$num] === 'TRUE') {
+
+            return true;
+        } else  if($args[$num] === 'false' || $args[$num] === 'FALSE') {
+
+            return false;
+        } else {
+
+            return $args[$num];
+        }
     }
 }

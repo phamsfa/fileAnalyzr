@@ -1,5 +1,14 @@
 <?php
 namespace hmsf\reader;
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+
+use hmsf\fs\Folderdata;
+use hmsf\service\Params;
+use hmsf\service\ServiceHandler;
 
 /**
  * Description of Content
@@ -9,39 +18,28 @@ namespace hmsf\reader;
 class Content {
     
     private $path;
-    private $dbSocket;
     private $folder;
-    private $attribHandler;
-    
+    private $serviceHandler;
+    //put your code here
     public function __construct() {
-        
-        // DATABASE
+
         $conf = new \vznrw\config\Conf();
         $con = new \vznrw\db\Connection($conf);
-        $this->dbSocket = new \vznrw\db\dbSocket($con,'files');
+        $dbSocket = new \vznrw\db\dbSocket($con,'files');
+        $attribHandler = new \hmsf\fs\AttribHandler();
 
-        // CONFIGURE ENGINE
-        $this->attribHandler = new \hmsf\fs\AttribHandler();
-        $content = $conf->get('content');
-        $this->path = $content->path;
-        $this->folder = $content->folder;
-        
+        $this->serviceHandler = new ServiceHandler($dbSocket,$attribHandler);
+
+        $pathData = $conf->get('content');
+        $this->path = $pathData->path;
+        $this->folder = $pathData->folder;
+
     }
     
-    public function read() {
-        // CONFIGURE TREEE WALKER
-        $config = new \stdClass();
-        $config->dbSocket = $this->dbSocket;
-        $config->attribHandler = $this->attribHandler;
-        
-        // LETS RUN GIVEN ROOT
-        $root = new \hmsf\fs\Folder($this->path, $this->folder, NULL, $config);
-        
-    }
-    
-    public function delete($name) {
-        $query = "select name from file where id_parent in (select id_file from file where name = '$name' and isNull(hash))";
-    
-        echo $query;
+    public function read(Params $params) {
+
+        $data = new FolderData($this->path,$this->folder,NULL);
+        $root = new \hmsf\fs\Folder($data, $this->serviceHandler, $params);
+
     }
 }

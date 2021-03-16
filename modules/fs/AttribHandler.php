@@ -13,25 +13,54 @@ namespace hmsf\fs;
  */
 class AttribHandler {
     
-    static $div = '/';
+    public $div = '/';
     
     public function __construct() {
         
     }
     
     public function get($path, $name, $id_parent) {
-        $me = $path.self::$div.$name;
-        $ownerDetails = posix_getpwuid(fileowner($me));
-        return new Attribs(array(
-            'id_parent' => $id_parent,
-            'name' => addslashes($name),
-            'path' => addslashes($me),
-            'size' => filesize($me),
-            'ctime' => date("Y-d-m H:i:s", filectime($me)),
-            'owner'=> $ownerDetails['name'],
-            'hash'=> (is_file($me)) ? hash_file('md5', $me) : NULL,
-        ));
+        $me = $path.$this->div.$name;
+        echo "\n $me";
+        if(is_file($me) || is_dir($me)) {
+            $ownerDetails = $this->getOwner($me);
+            return new Attribs(array(
+                'id_parent' => $id_parent,
+                'name' => addslashes($name),
+                'path' => addslashes($me),
+                'size' => (is_file($me)) ? filesize($me) : 0,
+                'ctime' => $this->getTime($me),
+                'owner'=> $ownerDetails['name'],
+                'hash'=> (is_file($me)) ? hash_file('md5', $me) : NULL,
+            ));
+        } else {
+            die("$me is no file");
+        }
+        
         
     }
+
+    public function getByObject(Folderdata $data) {
+        return $this->get($data->path,$data->name,$data->ID_parent);
+    }
     
+    private function getOwner($fileName) {
+        $owner = NULL;
+        try {
+            $owner = posix_getpwuid(fileowner($fileName));
+        } catch (Exception $e) {
+            print_r($e);
+        }
+        return $owner;
+    }
+    
+    private function getTime($fileName) {
+        $time = NULL;
+        try {
+            $time = date("Y-d-m H:i:s", filemtime($fileName));
+        } catch (Exception $e) {
+            print_r($e);
+        }
+        return $time;
+    }
 }
