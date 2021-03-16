@@ -1,14 +1,9 @@
 <?php
 
 namespace hmsf\fs;
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 
 /**
- * Description of Attribs
+ * Model for filesystem objects
  *
  * @author peter
  */
@@ -22,8 +17,10 @@ class Attribs {
     public $ctime;
     public $owner;
     public $hash;
+    public $file;
+    private $div;
 
-    public function __construct($arr) {
+    public function __construct($arr, $div) {
         $this->id_file = NULL;
         $this->id_parent = (isset($arr['id_parent'])) ? $arr['id_parent'] : null;
         $this->name = (isset($arr['name'])) ? $arr['name'] : null;
@@ -32,6 +29,9 @@ class Attribs {
         $this->ctime = (isset($arr['ctime'])) ? $arr['ctime'] : null;
         $this->owner = (isset($arr['owner'])) ? $arr['owner'] : null;
         $this->hash = (isset($arr['hash'])) ? $arr['hash'] : null;
+        $this->file = ($arr['file']) ? 'TRUE' : 'FALSE';
+        $this->div = $div;
+
     }
     
     public function get($col = false) {
@@ -50,5 +50,9 @@ class Attribs {
         if(property_exists($this,$key)) {
             $this->key = $value;
         }
+    }
+
+    public function getWithPath() {
+        return $this->path . $this->div . $this->name;
     }
 }

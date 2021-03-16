@@ -7,37 +7,31 @@ use hmsf\Service\Params;
 use hmsf\Service\ServiceHandler;
 
 /**
- * Description of File
+ * Description of File object triggering selected access options
  *
  * @author peter
  */
-class File extends \hmsf\fs\FS {
+class File extends FsObject {
     public $name;
     public $attribs;
-    private $me;
-    private $data;
     private $srvHandler;
-    static $div = '/';
     
-    
-    
-    public function __construct(FolderData $data, ServiceHandler $srvHandler, Params $params) {
+    public function __construct(Attribs $attribs, ServiceHandler $srvHandler, Params $params) {
         //$path, $name, $parentID, $config
-        echo '.';
         $this->srvHandler = $srvHandler;
-        $this->data = $data;
-        $this->me = $data->path . $srvHandler->attribHandler->div . $data->name;
+        $this->attribs = $attribs;
+        $filePath = $attribs->getWithPath();
         
-        if($data->name !== '.' && $data->name !== '..' && is_file($this->me)) {
+        if($attribs->name !== '.' && $attribs->name !== '..' && is_file($filePath)) {
 
-            $this->attribs = $this->config->attribHandler->get($data->path, $data->name, $data->ID_parent);
             if($params->action === 'save') {
                 
-                $this->write($this->attribs,$this->config->dbSocket);
+                $this->write($attribs,$this->srvHandler->dbSocket);
                 
             } else if($params->action === 'delete') {
                 
                 /* implement deletes with all three options */
+                $this->deleteFile($attribs, $params, $this->srvHandler->dbSocket);
             }
 
             
@@ -49,4 +43,7 @@ class File extends \hmsf\fs\FS {
         return ($this->attribs) ? $this->attribs->get($property) : 0;
     }
 
+    public function getSize() {
+        return $this->attribs->get('size');
+    }
 }

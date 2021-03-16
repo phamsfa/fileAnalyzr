@@ -11,35 +11,33 @@ use hmsf\service\Params;
 use hmsf\service\ServiceHandler;
 
 /**
- * Description of Content
+ * works as factory for readers mimik
+ * and as tiny service manager
  *
- * @author peter
+ * @author hmsf
  */
 class Content {
-    
+
+    private $conf;
     private $path;
     private $folder;
     private $serviceHandler;
-    //put your code here
+
     public function __construct() {
 
-        $conf = new \vznrw\config\Conf();
-        $con = new \vznrw\db\Connection($conf);
+        $this->conf = new \vznrw\config\Conf();
+        $con = new \vznrw\db\Connection($this->conf);
         $dbSocket = new \vznrw\db\dbSocket($con,'files');
         $attribHandler = new \hmsf\fs\AttribHandler();
 
         $this->serviceHandler = new ServiceHandler($dbSocket,$attribHandler);
-
-        $pathData = $conf->get('content');
-        $this->path = $pathData->path;
-        $this->folder = $pathData->folder;
-
     }
     
     public function read(Params $params) {
 
-        $data = new FolderData($this->path,$this->folder,NULL);
-        $root = new \hmsf\fs\Folder($data, $this->serviceHandler, $params);
+        $pathData = $this->conf->get('content');
+        $attribs = $this->serviceHandler->attribHandler->get($pathData->path,$pathData->name,NULL);
+        $tree = new \hmsf\fs\Folder($attribs, $this->serviceHandler, $params);
 
     }
 }

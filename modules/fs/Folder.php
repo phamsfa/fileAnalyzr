@@ -1,98 +1,111 @@
 <?php
 namespace hmsf\fs;
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+ * keep away!
  */
 
-use hmsf\fs\Folderdata;
 use hmsf\Service\Params;
 use hmsf\service\ServiceHandler;
 
 /**
- * Description of Folders
+ * represents a given folder from config
+ * an handles logic to wander tree
+ * an take action as configured
  *
  * @author peter
  */
-class Folder extends \hmsf\fs\FS {
-    //put your code here
-    public $name;
-    public $path;
-    public $ID_parent;
-    public $attribs;
-    private $content;
+class Folder extends FsObject {
 
     private $action;
     private $params;
     private $srvHandler;
-    
-    static $div = '/';
-    
-    public function __construct(FolderData $data, ServiceHandler $srvHandler, Params $params) {
-        // $path,$name,$parentID
-        //echo '|';
-        $this->name = $data->name;
-        $this->path = $data->path;
-        $this->ID_parent = $data->ID_parent;
+    private $folderSize;
+
+    public function __construct(Attribs $attribs, ServiceHandler $srvHandler, Params $params)
+    {
+        /* init */
         $this->params = $params;
-
-        $this->content = array();
-        $me = $this->path . $srvHandler->attribHandler->div . $this->name;
         $this->srvHandler = $srvHandler;
+        $this->folderSize = 0;
 
-        if($this->name != '.' && $this->name != '..' ) {
-            
-            if(is_dir($me)) {
+        /* attribs contains all relevant data about the fs object */
+        if($attribs->name != '.' && $attribs->name != '..' ) {
 
-                //$this->path = $me;
-                
+            $filePath = $attribs->getWithPath();
+            if(is_dir($filePath)) {
 
                 if($params->action == 'save') {
 
-                    $this->attribs = $this->srvHandler->attribHandler->get($this->path, $this->name, $this->ID_parent);
-                    $ID = $this->write($this->attribs,$this->srvHandler->dbSocket);
-                    echo '|';
+                    /* just tricker db action */
+                    $ID = $this->write($attribs,$this->srvHandler->dbSocket);
+                } else {
 
+                    $ID = 0;
+                    if($params->action === 'delete') {
+                        /* try trigger deletion action */
+                        $this->checkTriggerDeleteFolder($attribs, $params);
+                    }
                 }
-                $this->handle($me, $ID);
+                /* read and parse folder content */
+                $this->handle($filePath, $ID, $attribs);
                 
             } else {
-                
-                echo "\n NO DIR $me";
+                var_dump($attribs);
+                echo "\n NO DIR $filePath";
             }
         }
     }
     
-    private function handle($me, $ID) {
-        if ($dh = opendir($me)){
-            $folderSize = 0;
+    private function handle($filePath, $ID, $attribs)
+    {
+        if ($dh = opendir($filePath)){
+            $folderArr = [];
             while ( ($file = readdir($dh)) !== false ){
-                //$pathArr = [$this->path,$this->name,$file];
-                $me = $this->path . $this->srvHandler->attribHandler->div . $file;
-                //$me = join($this->srvHandler->attribHandler->div,$pathArr);
-                echo "\n $me";
-                $data = new FolderData($this->path, $file, $ID);
- 
-                if( is_dir($me)) {
-
-                    $this->content[] = new Folder( $data, $this->srvHandler, $this->params);
-
-                } else if (is_file($me)) {
-                    
-                    $fileObj = new File( $data, $this->srvHandler, $this->params);
-                    $folderSize += $fileObj->get('size');
-                    //$this->content[] = $file;
-
-                } else {
-                    echo " no file sorry ";
-                }
+                $folderArr[] = $file;
             }
-            $this->update($ID,['size'=>$folderSize],$this->srvHandler->dbSocket);
-            closedir($dh);
+            natsort($folderArr);
+
+            foreach($folderArr as $file) {
+                /* create container by details */
+                $fileObj = $this->getSibling($filePath,$file,$ID);
+                /* get and aggregate file-/folder-Size */
+                $this->folderSize += $fileObj->getSize();
+            }
             if($this->params->action == 'delete') {
-                /* to be triggered when and implemented */
+
+                /* check if item is searched for */
+                $this->deleteFolderOnTrigger($attribs, $this->params, $this->srvHandler->dbSocket);
+
+            } else if($this->params->getAction() == 'save') {
+
+                /* just update size in db on read mode */
+                $this->update($ID,['size'=>$this->folderSize],$this->srvHandler->dbSocket);
             }
+            closedir($dh);
         }
+    }
+
+    private function getSibling($filePath, $file, $ID)
+    {
+        /* create sibblings attribute */
+        $siblingAttribs = $this->srvHandler->attribHandler->get($filePath,$file,$ID);
+        $sibling = $siblingAttribs->getWithPath();
+
+        if( is_dir($sibling)) {
+
+            return new Folder( $siblingAttribs, $this->srvHandler, $this->params);
+
+        } else if (is_file($sibling)) {
+
+            return new File( $siblingAttribs, $this->srvHandler, $this->params);
+
+        } else {
+            echo " $sibling is no file sorry ";
+            die();
+        }
+    }
+
+    public function getSize() {
+        return $this->folderSize;
     }
 }
