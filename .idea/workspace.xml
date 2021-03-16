@@ -2,15 +2,21 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="e7f0db76-d2f7-4c75-b278-317c32c78e29" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/modules/fs/FsObject.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/index.php" beforeDir="false" afterPath="$PROJECT_DIR$/index.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/modules/Service/Params.php" beforeDir="false" afterPath="$PROJECT_DIR$/modules/Service/Params.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/modules/fs/AttribHandler.php" beforeDir="false" afterPath="$PROJECT_DIR$/modules/fs/AttribHandler.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/modules/fs/Attribs.php" beforeDir="false" afterPath="$PROJECT_DIR$/modules/fs/Attribs.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/modules/fs/FS.php" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/modules/fs/File.php" beforeDir="false" afterPath="$PROJECT_DIR$/modules/fs/File.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/modules/fs/Folder.php" beforeDir="false" afterPath="$PROJECT_DIR$/modules/fs/Folder.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/modules/handler/Content.php" beforeDir="false" afterPath="$PROJECT_DIR$/modules/reader/Content.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/Service/AutoFill.php" beforeDir="false" afterPath="$PROJECT_DIR$/modules/Service/_AutoFill.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/conf/Loader.php" beforeDir="false" afterPath="$PROJECT_DIR$/modules/conf/_Loader.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/conf/Params.php" beforeDir="false" afterPath="$PROJECT_DIR$/modules/conf/_Params.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/db/dbSocket_old.php" beforeDir="false" afterPath="$PROJECT_DIR$/modules/db/_dbSocket_old.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/db/sqlite/DB.php" beforeDir="false" afterPath="$PROJECT_DIR$/modules/db/_sqlite/DB.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/db/sqlite/Socket.php" beforeDir="false" afterPath="$PROJECT_DIR$/modules/db/_sqlite/Socket.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/fs/CSV.php" beforeDir="false" afterPath="$PROJECT_DIR$/modules/fs/_old/CSV.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/fs/Copy.php" beforeDir="false" afterPath="$PROJECT_DIR$/modules/fs/_old/Copy.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/fs/Dir.php" beforeDir="false" afterPath="$PROJECT_DIR$/modules/fs/_old/Dir.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/fs/FolderData.php" beforeDir="false" afterPath="$PROJECT_DIR$/modules/fs/_old/FolderData.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/fs/FsObject.php" beforeDir="false" afterPath="$PROJECT_DIR$/modules/fs/_old/FsObject.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/fs/Read.php" beforeDir="false" afterPath="$PROJECT_DIR$/modules/fs/_old/Read.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/fs/ReadJS.php" beforeDir="false" afterPath="$PROJECT_DIR$/modules/fs/_old/ReadJS.php" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -44,7 +50,7 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1615880137656</updated>
-      <workItem from="1615880138734" duration="18401000" />
+      <workItem from="1615880138734" duration="19357000" />
     </task>
     <servers />
   </component>

@@ -3,7 +3,6 @@ include_once('modules/conf/Conf.php');
 include_once('modules/fs/FsObject.php');
 include_once('modules/fs/File.php');
 include_once('modules/fs/Folder.php');
-include_once('modules/fs/FolderData.php');
 include_once('modules/fs/Attribs.php');
 include_once('modules/fs/AttribHandler.php');
 include_once('modules/db/Connection.php');
