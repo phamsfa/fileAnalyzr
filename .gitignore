@@ -1,3 +1,4 @@
 config/*
 nbproject
 old
+.idea/*
