@@ -69,7 +69,7 @@ class Params
     /* increase number of finings by search string */
     public function deletionRoundInc() {
         $this->deletionRound++;
-        if($this->deletionRound == $this->method && $this->method != 0) {
+        if($this->deletionRound == $this->option && $this->option != 0) {
             $this->done = true;
         }
     }
