@@ -38,7 +38,9 @@ class Content {
         $pathData = $this->conf->get('content');
         $attribs = $this->serviceHandler->attribHandler->get($pathData->path,$pathData->name,NULL);
 
-        $tree = new \hmsf\fs\Folder($attribs, $this->serviceHandler, $params);
+        $tree = new \hmsf\fs\Folder($attribs, $this->serviceHandler, $params, false);
+
+        echo 'Dateien gelöscht: '.$tree->getDeletions();
 
     }
 }

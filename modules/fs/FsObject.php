@@ -38,83 +38,92 @@ class FsObject {
     function update ($id_parent, $data, $dbSocket)
     {
         $query = "update `file` set `size` = ".$data['size']." WHERE id_file =  $id_parent";
-        echo "]";
         $dbSocket->ask($query,true);
     }
 
     function delete(Attribs $attribs,dbSocket $dbSocket) {
-        $id = $this->check($attribs,$dbSocket);
+        if(!isset($attribs->id_file)) {
+            $id = $this->check($attribs,$dbSocket);
+        } else {
+            $id = $attribs->id_file;
+        }
         if($id) {
             $query = "delete from `file` where id_file = $id";
             $dbSocket->ask($query);
         }
     }
 
-
-    /* set delete flag for recursively removing files/folders with and within deletion target */
-    function checkTriggerDeleteFolder(Attribs $attribs, Params $params)
-    {
-        if($attribs->name === $params->getMethod() && $params->getDeletFlag() === false) {
-
-            $params->setDeleteFlagAndPath($attribs->getWithPath());
-            if($params->verbose) {
-
-                echo "\n start Deleting Content on $attribs->path/$attribs->name";
+    public function matchesSearch($attribs, $params) {
+        $searchStrings = $params->getMethod();
+        foreach($searchStrings as $searchString) {
+            if($searchString == $attribs->name) {
+                return true;
             }
+        }
+        return false;
+    }
+
+    function setDeleteSwitch(Attribs $attribs, Params $params, bool $deletionMark) {
+        $matches = $this->matchesSearch($attribs, $params);
+        if($matches && !$deletionMark) {
+            return true;
+        } else {
+            return false;
         }
     }
 
-    /* delete folders contained in deletion target and when empty: target itself */
-    function deleteFolderOnTrigger(Attribs $attribs, Params $params, dbSocket $dbSocket)
+    function checkDeleteFolder($params, $attribs, $deletionMark , $deletionSwitch,$folderSize)
     {
-        $msg = "\ndelFOT: $attribs->name";
-        $del = false;
-        if($attribs->getWithPath() !== $params->getDeletePath() && $params->getDeletFlag() === true) {
+        $return = false;
+        if(!$params->getDone() || $folderSize === 0) {
+            if(($deletionMark || $deletionSwitch || $folderSize === 0)) {
+                if($params->verbose) {
 
-            $msg = "\n just delete folder $attribs->path/$attribs->name because of trigger";
-            $del = true;
-
-        } else if ($attribs->getWithPath() === $params->getDeletePath()) {
-
-            $msg = "\n delete folder $attribs->path/$attribs->name because of search-term and now is empty ";
-            /* item we have searched for is now empty for deletion */
-            $params->unsetDeletMode();
-            $params->deletionRoundInc();
-            $del = true;
-
-        }
-
-        if($del) {
-            $params->deleteCounterInc();
-
-            if($params->verbose) {
-                echo $msg;
+                    echo "\n DELETE FOldEr ".$attribs->getWithPath();
+                } else {
+                    try {
+                        rmdir($attribs->getWithPath());
+                    } catch (Exception $e) {
+                        echo "del DIR ".$attribs->getWithPath()." NOT DONE ";
+                        var_dump($e);
+                        die();
+                    }
+                    echo 'D';
+                }
+                $return = true;
+                $params->deleteCounterInc();
             } else {
-                rmdir($attribs->getWithPath());
+                echo 'd';
+            }
+            if($deletionSwitch) {
+                $params->setDone();
             }
         }
+        return $return;
     }
 
     /* delete files  */
     function deleteFile(Attribs $attribs, Params $params, dbSocket $dbSocket)
     {
-        if($attribs->name === $params->getMethod() || $params->getDeletFlag() === true){
+        if($params->verbose) {
 
-            if($params->verbose) {
+            echo "\n DELETE FILE $attribs->path/$attribs->name";
 
-                echo "\n DELETE FILE $attribs->path/$attribs->name";
-                echo ($params->getDeletFlag()) ? ' upper folder to delete' : 'my name matches';
-            } else {
+        } else {
+
+            try {
 
                 unlink($attribs->getWithPath());
-                $params->deleteCounterInc();
-                //$this->delete($attribs,$dbSocket);
+            } catch (Exception $e) {
+                echo "del File ".$attribs->getWithPath()." NOT DONE ";
+                var_dump($e);
+                die();
             }
-            if(!$params->getDeletFlag()) {
-                /* when not flagged by folder - do increase on rounds */
-                $params->deletionRoundInc();
-            }
+            echo 'F';
+            $params->deleteCounterInc();
+            return true;
         }
+        return false;
 
     }
 

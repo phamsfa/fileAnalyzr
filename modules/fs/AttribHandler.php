@@ -8,15 +8,12 @@ namespace hmsf\fs;
 class AttribHandler {
     
     public $div = '/';
-    
-    public function __construct() {
-        
-    }
-    
+
     public function get($path, $name, $id_parent)
     {
         $me = $path.$this->div.$name;
         $isFile = is_file($me);
+
         if(is_file($me) || is_dir($me)) {
             return new Attribs(array(
                 'id_parent' => $id_parent,
@@ -31,15 +28,8 @@ class AttribHandler {
         } else {
             die("$me is no file");
         }
-        
-        
     }
 
-    public function getByObject(Folderdata $data)
-    {
-        return $this->get($data->path,$data->name,$data->ID_parent);
-    }
-    
     private function getOwner($fileName)
     {
         $owner = NULL;

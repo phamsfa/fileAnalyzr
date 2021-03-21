@@ -53,6 +53,6 @@ class Attribs {
     }
 
     public function getWithPath() {
-        return $this->path . $this->div . $this->name;
+        return stripslashes($this->path) . $this->div . stripslashes($this->name);
     }
 }
