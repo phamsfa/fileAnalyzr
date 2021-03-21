@@ -91,7 +91,7 @@ class Folder extends FsObject {
                  * get and aggregate file-/folder-Size
                  * */
                 $fileObj = $this->getSibling($filePath,$file,$ID);
-                $this->folderSize += $fileObj->getSize();
+                $this->folderSize += ($fileObj) ? $fileObj->getSize() : 1;
 
             }
         }
@@ -116,7 +116,8 @@ class Folder extends FsObject {
 
         } else {
             echo " $sibling is no file or has ugly'Name ";
-            die();
+            $fileObj = NULL;
+
         }
         return $fileObj;
     }

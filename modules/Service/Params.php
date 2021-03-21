@@ -68,6 +68,7 @@ class Params
             echo "\n del-nr: $this->deleteCounter ";
         }
 
+
         if($level >= $this->deleteCounter || $level != 0) {
             $this->done = true;
             echo "del-END!! ";
