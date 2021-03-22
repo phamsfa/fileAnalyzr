@@ -26,7 +26,7 @@ class FsObject {
             ];
             $insertID = $dbSocket->insert($queryArr);
             $attribs->set('ID_file',$insertID);
-            echo ($attribs->file === 'TRUE') ? '.' : '[';
+            echo ($attribs->file === 'TRUE') ? '.' : ']';
             return $insertID;
         } else {
             echo ($attribs->file === 'TRUE') ? '_' : '(';
@@ -39,6 +39,7 @@ class FsObject {
     {
         $query = "update `file` set `size` = ".$data['size']." WHERE id_file =  $id_parent";
         $dbSocket->ask($query,true);
+        echo ")";
     }
 
     function delete(Attribs $attribs,dbSocket $dbSocket) {
@@ -50,14 +51,37 @@ class FsObject {
         if($id) {
             $query = "delete from `file` where id_file = $id";
             $dbSocket->ask($query);
+            echo 'x';
         }
     }
 
-    public function matchesSearch($attribs, $params) {
+    public function matchesSearch($attribs, $params)
+    {
         $searchStrings = $params->getMethod();
-        foreach($searchStrings as $searchString) {
-            if($searchString == $attribs->name) {
-                return true;
+        if(is_array($searchStrings)) {
+
+            foreach($searchStrings as $searchString) {
+
+                if($this->wildcardComparer($searchString, $attribs->name)) {
+                    return true;
+                }
+            }
+        } else if(is_string($searchStrings)){
+            return $this->wildcardComparer($searchStrings, $attribs->name);
+        }
+        return false;
+    }
+
+    public function wildcardComparer($searchString, $name)
+    {
+        if($searchString === $name) {
+            return true;
+        } else if(strstr($searchString,'*')) {
+            $searchArr = explode('*',$searchString);
+            foreach($searchArr as $subString) {
+                if(strstr($name,$subString)) {
+                    return true;
+                }
             }
         }
         return false;
@@ -72,7 +96,7 @@ class FsObject {
         }
     }
 
-    function checkDeleteFolder($params, $attribs, $deletionMark , $deletionSwitch,$folderSize)
+    function checkDeleteFolder($params, $attribs, $deletionMark , $deletionSwitch, $folderSize)
     {
         $return = false;
         if(!$params->getDone() || $folderSize === 0) {

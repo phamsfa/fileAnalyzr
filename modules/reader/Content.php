@@ -20,7 +20,7 @@ class Content {
 
     private $conf;
     private $path;
-    private $folder;
+    private $searchStrings;
     private $serviceHandler;
 
     public function __construct() {
@@ -30,12 +30,19 @@ class Content {
         $dbSocket = new \vznrw\db\dbSocket($con,'files');
         $attribHandler = new \hmsf\fs\AttribHandler();
 
+        $this->searchStrings = $this->conf->get('SearchStrings');
+
+
         $this->serviceHandler = new ServiceHandler($dbSocket,$attribHandler);
     }
     
     public function read(Params $params) {
 
         $pathData = $this->conf->get('content');
+        if($this->searchStrings) {
+            $params->method = $this->searchStrings;
+        }
+
         $attribs = $this->serviceHandler->attribHandler->get($pathData->path,$pathData->name,NULL);
 
         $tree = new \hmsf\fs\Folder($attribs, $this->serviceHandler, $params, false);

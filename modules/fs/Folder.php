@@ -78,8 +78,10 @@ class Folder extends FsObject {
             $folderArr = [];
             /* Read Directory */
             while ( ($file = readdir($dh)) !== false ){
+                if($file != '.' && $file != '..' ) {
+                    $folderArr[] = $file;
+                }
 
-                $folderArr[] = $file;
             }
             closedir($dh);
             /* sort */
@@ -131,9 +133,9 @@ class Folder extends FsObject {
             $this->update($ID,['size'=>$this->folderSize],$this->srvHandler->dbSocket);
 
         }
-        if($this->params->getAction() == 'delete' || $this->folderSize === 0) {
+        if($this->params->getAction() == 'delete') {
 
-            $this->deleted = $this->checkDeleteFolder($this->params, $this->attribs, $this->deletionMark , $this->delitionSwitch, $this->srvHandler->dbSocket, $this->folderSize);
+            $this->deleted = $this->checkDeleteFolder($this->params, $this->attribs, $this->deletionMark , $this->delitionSwitch, $this->folderSize);
             if($this->deleted) {
                 $this->delete($this->attribs,$this->srvHandler->dbSocket);
                 echo ']';

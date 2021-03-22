@@ -13,7 +13,7 @@ include_once('modules/Service/Params.php');
 include_once('modules/Service/ServiceHandler.php');
 
 //$methods = [0,10,11,17,18,19,20,21,23,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,91,92,93,94,95,96,97,98,99,'Templates-alt','V1','Elephant-180x180-final.png'];
-$methods = ['.AppleDouble','tiny_mce','.DS_Store'];
+
 $params = new hmsf\Service\Params($argv);
 $params->verbose = false;
 
@@ -23,7 +23,7 @@ $option = $params->getOption();
 
 $content = new hmsf\reader\Content();
 
-$params->method = $methods;
+//$params->method = $methods;
 $params->unSetDone();
 
 
