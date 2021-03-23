@@ -32,6 +32,7 @@ class File extends FsObject {
                 $this->write($attribs,$this->srvHandler->dbSocket);
                 
             } else if($params->action === 'delete' ) {
+
                 if($deletionMark || $this->matchesSearch($attribs, $params)) {
 
                     /* implement deletes with all three options */
@@ -52,7 +53,7 @@ class File extends FsObject {
 
     public function getSize()
     {
-        return $this->attribs->get('size');
+        return ($this->deleted) ? 0 : $this->attribs->get('size');
     }
 
     public function isDeleted()

@@ -13,6 +13,8 @@ use vznrw\db\dbSocket;
 
 class FsObject {
 
+    static $wildcard = '*';
+
     /* write db representation of fs */
     function write(Attribs $attribs, dbSocket $dbSocket)
     {
@@ -26,7 +28,7 @@ class FsObject {
             ];
             $insertID = $dbSocket->insert($queryArr);
             $attribs->set('ID_file',$insertID);
-            echo ($attribs->file === 'TRUE') ? '.' : ']';
+            echo ($attribs->file === 'TRUE') ? '.' : '[';
             return $insertID;
         } else {
             echo ($attribs->file === 'TRUE') ? '_' : '(';
@@ -75,11 +77,13 @@ class FsObject {
     public function wildcardComparer($searchString, $name)
     {
         if($searchString === $name) {
+
             return true;
-        } else if(strstr($searchString,'*')) {
-            $searchArr = explode('*',$searchString);
+        } else if(strstr($searchString,self::$wildcard)) {
+
+            $searchArr = explode(self::$wildcard,$searchString);
             foreach($searchArr as $subString) {
-                if(strstr($name,$subString)) {
+                if($subString !== '' && strpos($name,$subString) !== false) {
                     return true;
                 }
             }
@@ -96,7 +100,7 @@ class FsObject {
         }
     }
 
-    function checkDeleteFolder($params, $attribs, $deletionMark , $deletionSwitch, $folderSize)
+    function checkDeleteFolder(Params $params, Attribs $attribs, $deletionMark , $deletionSwitch, $folderSize)
     {
         $return = false;
         if(!$params->getDone() || $folderSize === 0) {
@@ -120,7 +124,7 @@ class FsObject {
                 echo 'd';
             }
             if($deletionSwitch) {
-                $params->setDone();
+                $params->checkIfDone();
             }
         }
         return $return;
@@ -132,6 +136,7 @@ class FsObject {
         if($params->verbose) {
 
             echo "\n DELETE FILE $attribs->path/$attribs->name";
+            return true;
 
         } else {
 

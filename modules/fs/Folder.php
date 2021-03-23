@@ -152,7 +152,7 @@ class Folder extends FsObject {
 
     public function getDeletions()
     {
-        return $this->params->getDeletionCount();
+        return $this->params->getDeleteCounter();
     }
 
     public function isDeleted()

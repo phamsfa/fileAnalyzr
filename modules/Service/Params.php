@@ -61,7 +61,7 @@ class Params
         return $this->done;
     }
 
-    public function setDone()
+    public function checkIfDone()
     {
         $level = intval($this->getOption());
         if($this->verbose) {

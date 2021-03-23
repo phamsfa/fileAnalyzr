@@ -26,13 +26,10 @@ class Content {
     public function __construct() {
 
         $this->conf = new \vznrw\config\Conf();
-        $con = new \vznrw\db\Connection($this->conf);
-        $dbSocket = new \vznrw\db\dbSocket($con,'files');
+        $dbSocket = $this->getDBSocket();
         $attribHandler = new \hmsf\fs\AttribHandler();
 
         $this->searchStrings = $this->conf->get('SearchStrings');
-
-
         $this->serviceHandler = new ServiceHandler($dbSocket,$attribHandler);
     }
     
@@ -49,5 +46,10 @@ class Content {
 
         echo 'Dateien gelöscht: '.$tree->getDeletions();
 
+    }
+
+    private function getDBSocket() {
+        $con = new \vznrw\db\Connection($this->conf);
+        return new \vznrw\db\dbSocket($con,'files');
     }
 }
